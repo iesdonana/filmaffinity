@@ -14,11 +14,14 @@
                             FROM peliculas p
                             JOIN generos g
                             ON genero_id = g.id
-                            WHERE position(lower(:titulo) in lower(titulo)) != 0'); //position es como mb_substrpos() de php, devuelve 0 si no encuentra nada. ponemos lower() de postgre para que no distinga entre mayu y minus
+                            WHERE position(lower(:titulo) in lower(titulo)) != 0'); //position es como mb_substrpos() de php,
+                                                                                    //devuelve 0 si no encuentra nada. ponemos lower() de postgre para
+                                                                                    //que no distinga entre mayu y minus
         // $res = $st->fetchAll(); el st (PDOStatement) tb se puede recorrer
         $st->execute([':titulo' => "$buscarTitulo"]);
         ?>
         <div>
+          <!-- Creamos un Buscador de peliculas -->
             <fieldset>
                 <legend>Buscar</legend>
                 <form action="" method="get">
