@@ -32,7 +32,6 @@
                 </form>
             </fieldset>
         </div>
-
     <div style="margin-top: 20px">
         <table border="1" style="margin:auto"><!--El style lo centra-->
             <thead>
