@@ -14,7 +14,7 @@
         <div class="container">
             <div class="row">
                 <?php
-                require 'auxiliar.php';
+                require '../comunes/auxiliar.php';
 
                 $pdo = conectar();
 
