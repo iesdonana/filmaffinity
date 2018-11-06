@@ -22,9 +22,9 @@
         extract(PAR);
 
         try {
+            $error = [];
             comprobarParametros(PAR);
             extract(array_map('trim', $_POST), EXTR_IF_EXISTS);
-            $error = [];
             $flt['titulo'] = comprobarTitulo($error);
             $flt['anyo'] = comprobarAnyo($error);
             $flt['sinopsis'] = trim(filter_input(INPUT_POST, 'sinopsis'));
@@ -34,14 +34,10 @@
             comprobarErrores($error);
             insertarPelicula($pdo, $flt);
             header('Location: index.php');
-        } catch (EmptyParamException $e) {
+        } catch (EmptyParamException|ValidationException $e) {
             // No hago nada
         } catch (ParamException $e) {
             header('Location: index.php');
-        } catch (ValidationException $e) {
-            foreach ($error as $err) {
-                echo "<h4>$err</h4>";
-            }
         }
         ?>
         <br>
@@ -56,11 +52,13 @@
                             <label for="titulo" class="control-label">Título</label>
                             <input id="titulo" type="text" name="titulo"
                                    class="form-control" value="<?= $titulo ?>">
+                            <?php mensajeError('titulo', $error) ?>
                         </div>
                         <div class="form-group <?= hasError('anyo', $error) ?>">
                             <label for="anyo" class="control-label">Año</label>
                             <input id="anyo" type="text" name="anyo"
                                    class="form-control" value="<?= $anyo ?>">
+                            <?php mensajeError('anyo', $error) ?>
                         </div>
                         <div class="form-group">
                             <label for="sinopsis" class="control-label">Sinopsis</label>
@@ -75,12 +73,14 @@
                             <input id="duracion" type="text" name="duracion"
                                    class="form-control"
                                    value="<?= $duracion ?>">
+                            <?php mensajeError('duracion', $error) ?>
                         </div>
                         <div class="form-group <?= hasError('anyo', $error) ?>">
                             <label for="genero_id" class="control-label">Género</label>
                             <input id="genero_id" type="text" name="genero_id"
                                    class="form-control"
                                    value="<?= $genero_id?>">
+                            <?php mensajeError('genero_id', $error) ?>
                         </div>
                         <input type="submit" value="Insertar"
                                class="btn btn-success">
