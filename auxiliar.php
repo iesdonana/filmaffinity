@@ -1,5 +1,17 @@
 <?php
 
+class ValidationException extends Exception
+{
+}
+
+class ParamException extends Exception
+{
+}
+
+class EmptyParamException extends Exception
+{
+}
+
 function conectar()
 {
     return new PDO('pgsql:host=localhost;dbname=fa', 'fa', 'fa');
@@ -70,4 +82,29 @@ function comprobarGeneroId($pdo, &$error)
         $error[] = 'El género no es correcto.';
     }
     return $fltGeneroId;
+}
+
+function insertarPelicula($pdo, $fila)
+{
+    $st = $pdo->prepare('INSERT INTO peliculas (titulo, anyo, sinopsis, duracion, genero_id)
+                         VALUES (:titulo, :anyo, :sinopsis, :duracion, :genero_id)');
+    $st->execute($fila);
+}
+
+function comprobarParametros($par)
+{
+    if (empty($_POST)) {
+        throw new EmptyParamException();
+    }
+    if (!empty(array_diff_key($par, $_POST)) ||
+        !empty(array_diff_key($_POST, $par))) {
+        throw new ParamException();
+    }
+}
+
+function comprobarErrores($error)
+{
+    if (!empty($error)) {
+        throw new ValidationException();
+    }
 }
