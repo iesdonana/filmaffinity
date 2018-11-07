@@ -11,17 +11,11 @@
         <?php
         require '../comunes/auxiliar.php';
 
-        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-        if ($id === null || $id === false) {
-            header('Location: index.php');
-        }
-        $pdo = conectar();
-        $fila = buscarPelicula($pdo, $id);
-        if ($fila === false) {
-            header('Location: index.php');
-        }
         try {
             $error = [];
+            $id = comprobarId();
+            $pdo = conectar();
+            $fila = comprobarPelicula($pdo, $id);
             comprobarParametros(PAR);
             $valores = array_map('trim', $_POST);
             $flt['titulo'] = comprobarTitulo($error);
