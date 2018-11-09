@@ -12,6 +12,16 @@
         </style>
     </head>
     <body>
+        <nav class="navbar navbar-default navbar-inverse">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">FilmAffinity</a>
+                </div>
+                <div class="navbar-text navbar-right">
+                    <a href="login.php" class="btn btn-success">Login</a>
+                </div>
+            </div>
+        </nav>
         <div class="container">
             <br>
             <?php if (isset($_SESSION['mensaje'])): ?>
