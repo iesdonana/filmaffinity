@@ -18,7 +18,12 @@
                     <a class="navbar-brand" href="#">FilmAffinity</a>
                 </div>
                 <div class="navbar-text navbar-right">
-                    <a href="login.php" class="btn btn-success">Login</a>
+                    <?php if (isset($_SESSION['usuario'])): ?>
+                        <?= $_SESSION['usuario'] ?>
+                        <a href="logout.php" class="btn btn-success">Logout</a>
+                    <?php else: ?>
+                        <a href="login.php" class="btn btn-success">Login</a>
+                    <?php endif ?>
                 </div>
             </div>
         </nav>

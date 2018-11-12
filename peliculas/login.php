@@ -23,9 +23,10 @@
             $valores = array_map('trim', $_POST);
             $flt['login'] = comprobarLogin($error);
             $flt['password'] = comprobarPassword($error);
-            comprobarUsuario($flt, $pdo, $error);
+            $usuario = comprobarUsuario($flt, $pdo, $error);
             comprobarErrores($error);
             // Sólo queda loguearse
+            $_SESSION['usuario'] = $usuario['login'];
             header('Location: index.php');
         } catch (EmptyParamException|ValidationException $e) {
             // No hago nada

@@ -12,6 +12,11 @@
         <?php
         require '../comunes/auxiliar.php';
 
+        if (!isset($_SESSION['usuario'])) {
+            $_SESSION['mensaje'] = 'Debe iniciar sesión para modificar películas.';
+            header('Location: index.php');
+        }
+
         try {
             $error = [];
             $id = comprobarId();
