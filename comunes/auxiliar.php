@@ -32,6 +32,13 @@ function buscarPelicula($pdo, $id)
     return $st->fetch();
 }
 
+function buscarUsuario($pdo, $id)
+{
+    $st = $pdo->prepare('SELECT * FROM usuarios WHERE id = :id');
+    $st->execute([':id' => $id]);
+    return $st->fetch();
+}
+
 function comprobarTitulo(&$error)
 {
     $fltTitulo = trim(filter_input(INPUT_POST, 'titulo'));
