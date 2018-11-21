@@ -32,6 +32,20 @@ function buscarPelicula($pdo, $id)
     return $st->fetch();
 }
 
+function buscarPeliculasPorGenero($pdo, $genero_id)
+{
+    $st = $pdo->prepare('SELECT * FROM peliculas WHERE genero_id = :genero_id');
+    $st->execute([':genero_id' => $genero_id]);
+    return $st->fetchAll();
+}
+
+function buscarGenero($pdo, $id)
+{
+    $st = $pdo->prepare('SELECT * FROM generos WHERE id = :id');
+    $st->execute([':id' => $id]);
+    return $st->fetch();
+}
+
 function buscarUsuario($pdo, $id)
 {
     $st = $pdo->prepare('SELECT * FROM usuarios WHERE id = :id');
@@ -280,4 +294,37 @@ function comprobarUsuario($valores, $pdo, &$error)
     }
     $error['sesion'] = 'El usuario o la contraseña son incorrectos.';
     return false;
+}
+
+function pie()
+{ ?>
+    <hr>
+    <div class="row">
+        <p class="text-right">Copyright (c) 2018 IES Doñana</p>
+    </div>
+    <?php
+}
+
+function encabezado()
+{ ?>
+    <nav class="navbar navbar-default navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">FilmAffinity</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="/peliculas/">Películas</a></li>
+                <li><a href="/generos/">Géneros</a></li>
+            </ul>
+            <div class="navbar-text navbar-right">
+                <?php if (isset($_SESSION['usuario'])): ?>
+                    <?= $_SESSION['usuario'] ?>
+                    <a href="/logout.php" class="btn btn-success">Logout</a>
+                <?php else: ?>
+                    <a href="/login.php" class="btn btn-success">Login</a>
+                <?php endif ?>
+            </div>
+        </div>
+    </nav>
+    <?php
 }

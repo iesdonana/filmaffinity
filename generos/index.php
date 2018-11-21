@@ -34,29 +34,35 @@
                 if (isset($_POST['id'])) {
                     $id = $_POST['id'];
                     $pdo->beginTransaction();
-                    $pdo->exec('LOCK TABLE peliculas IN SHARE MODE');
-                    if (!buscarPelicula($pdo, $id)) { ?>
-                        <h3>La película no existe.</h3>
+                    $pdo->exec('LOCK TABLE generos IN SHARE MODE');
+                    if (!buscarGenero($pdo, $id)) { ?>
+                        <h3>El género no existe.</h3>
                         <?php
                     } else {
-                        $st = $pdo->prepare('DELETE FROM peliculas WHERE id = :id');
-                        $st->execute([':id' => $id]); ?>
-                        <h3>Película borrada correctamente.</h3>
+                        if (buscarPeliculasPorGenero($pdo, $id)) { ?>
+                            <h3>Hay películas de ese género.</h3>
                         <?php
+                    } else {
+                            $st = $pdo->prepare('DELETE FROM generos WHERE id = :id');
+                            if (!$st->execute([':id' => $id])) {
+                                print_r($st->errorInfo());
+                            } else { ?>
+                                <h3>Género borrado correctamente.</h3>
+                            <?php
+                            }
+                        }
                     }
                     $pdo->commit();
                 }
 
-                $buscarTitulo = isset($_GET['buscarTitulo'])
-                ? trim($_GET['buscarTitulo'])
+                $buscarGenero = isset($_GET['buscarGenero'])
+                ? trim($_GET['buscarGenero'])
                 : '';
-                $st = $pdo->prepare('SELECT p.*, genero
-                                       FROM peliculas p
-                                       JOIN generos g
-                                         ON genero_id = g.id
-                                      WHERE position(lower(:titulo) in lower(titulo)) != 0
+                $st = $pdo->prepare('SELECT *
+                                       FROM generos
+                                      WHERE position(lower(:genero) in lower(genero)) != 0
                                    ORDER BY id');
-                $st->execute([':titulo' => $buscarTitulo]);
+                $st->execute([':genero' => $buscarGenero]);
                 ?>
             </div>
             <div class="row" id="busqueda">
@@ -65,9 +71,9 @@
                         <legend>Buscar...</legend>
                         <form action="" method="get" class="form-inline">
                             <div class="form-group">
-                                <label for="buscarTitulo">Buscar por título:</label>
-                                <input id="buscarTitulo" type="text" name="buscarTitulo"
-                                       value="<?= $buscarTitulo ?>"
+                                <label for="buscarGenero">Buscar por género:</label>
+                                <input id="buscarGenero" type="text" name="buscarGenero"
+                                       value="<?= $buscarGenero ?>"
                                        class="form-control">
                             </div>
                             <input type="submit" value="Buscar" class="btn btn-primary">
@@ -80,20 +86,11 @@
                 <div class="col-md-12">
                     <table class="table table-bordered table-hover table-striped">
                         <thead>
-                            <th>Título</th>
-                            <th>Año</th>
-                            <th>Sinopsis</th>
-                            <th>Duración</th>
                             <th>Género</th>
-                            <th>Acciones</th>
                         </thead>
                         <tbody>
                             <?php foreach ($st as $fila): ?>
                                 <tr>
-                                    <td><?= h($fila['titulo']) ?></td>
-                                    <td><?= h($fila['anyo']) ?></td>
-                                    <td><?= h($fila['sinopsis']) ?></td>
-                                    <td><?= h($fila['duracion']) ?></td>
                                     <td><?= h($fila['genero']) ?></td>
                                     <td>
                                         <a href="confirm_borrado.php?id=<?= $fila['id'] ?>"
@@ -113,7 +110,7 @@
             </div>
             <div class="row">
                 <div class="text-center">
-                    <a href="insertar.php" class="btn btn-info">Insertar una nueva película</a>
+                    <a href="insertar.php" class="btn btn-info">Insertar un nuevo género</a>
                 </div>
             </div>
             <?php if (!isset($_COOKIE['acepta'])): ?>

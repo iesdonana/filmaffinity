@@ -10,7 +10,7 @@
     </head>
     <body>
         <?php
-        require '../comunes/auxiliar.php';
+        require 'comunes/auxiliar.php';
 
         const PAR_LOGIN = ['login' => '', 'password' => ''];
 
