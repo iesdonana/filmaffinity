@@ -47,28 +47,67 @@
                     $pdo->commit();
                 }
 
-                $buscarTitulo = isset($_GET['buscarTitulo'])
-                ? trim($_GET['buscarTitulo'])
-                : '';
-                $st = $pdo->prepare('SELECT p.*, genero
+                $where = $execute = [];
+                $buscarTitulo = $buscarAnyo = $buscarGenero = '';
+                if (isset($_GET['buscarTitulo'])) {
+                    $buscarTitulo = trim($_GET['buscarTitulo']);
+                    if ($buscarTitulo !== '') {
+                        $where[] = 'titulo ILIKE :titulo';
+                        $execute[':titulo'] = "%$buscarTitulo%";
+                    }
+                }
+                if (isset($_GET['buscarAnyo'])) {
+                    $buscarAnyo = trim($_GET['buscarAnyo']);
+                    if ($buscarAnyo !== '') {
+                        $where[] = 'anyo::text = :anyo';
+                        $execute[':anyo'] = $buscarAnyo;
+                    }
+                }
+                if (isset($_GET['buscarGenero'])) {
+                    $buscarGenero = trim($_GET['buscarGenero']);
+                    if ($buscarGenero !== '') {
+                        $where[] = 'genero_id::text = :genero_id';
+                        $execute[':genero_id'] = $buscarGenero;
+                    }
+                }
+                $where = empty($where) ? '' : 'WHERE ' . implode(' AND ', $where);
+                $st = $pdo->prepare("SELECT p.*, genero
                                        FROM peliculas p
                                        JOIN generos g
                                          ON genero_id = g.id
-                                      WHERE position(lower(:titulo) in lower(titulo)) != 0
-                                   ORDER BY id');
-                $st->execute([':titulo' => $buscarTitulo]);
+                                     $where
+                                   ORDER BY id");
+                $st->execute($execute);
+                $generos = recogerGeneros($pdo);
                 ?>
             </div>
             <div class="row" id="busqueda">
                 <div class="col-md-12">
                     <fieldset>
                         <legend>Buscar...</legend>
-                        <form action="" method="get" class="form-inline">
+                        <form action="" method="get">
                             <div class="form-group">
                                 <label for="buscarTitulo">Buscar por título:</label>
                                 <input id="buscarTitulo" type="text" name="buscarTitulo"
                                        value="<?= $buscarTitulo ?>"
                                        class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="buscarAnyo">Buscar por año:</label>
+                                <input id="buscarAnyo" type="text" name="buscarAnyo"
+                                       value="<?= $buscarAnyo ?>"
+                                       class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="buscarAnyo">Buscar por género:</label>
+                                <select id="buscarGenero" name="buscarGenero" class="form-control">
+                                    <option value=""></option>
+                                    <?php foreach ($generos as $fila): ?>
+                                        <option value="<?= $fila['id'] ?>" <?= selected($fila['id'], $buscarGenero) ?> >
+                                            <?= $fila['genero'] ?>
+                                        </option>
+                                    <?php endforeach ?>
+                                </select>
                             </div>
                             <input type="submit" value="Buscar" class="btn btn-primary">
                         </form>

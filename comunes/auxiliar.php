@@ -50,6 +50,13 @@ function buscarGenero($pdo, $id)
     return $st->fetch();
 }
 
+function buscarGeneroPorGenero($pdo, $genero)
+{
+    $st = $pdo->prepare('SELECT * FROM generos WHERE genero = :genero');
+    $st->execute([':genero' => $genero]);
+    return $st->fetch();
+}
+
 function buscarUsuario($pdo, $id)
 {
     $st = $pdo->prepare('SELECT * FROM usuarios WHERE id = :id');
@@ -68,13 +75,16 @@ function comprobarTitulo(&$error)
     return $fltTitulo;
 }
 
-function comprobarGenero(&$error)
+function comprobarGenero($pdo, &$error)
 {
     $fltGenero = trim(filter_input(INPUT_POST, 'genero'));
     if ($fltGenero === '') {
         $error['genero'] = 'El género es obligatorio.';
     } elseif (mb_strlen($fltGenero) > 255) {
         $error['genero'] = "El género es demasiado largo.";
+    }
+    if (buscarGeneroPorGenero($pdo, $fltGenero)) {
+        $error['genero'] = 'El género ya existe.';
     }
     return $fltGenero;
 }
@@ -392,4 +402,9 @@ function encabezado()
         </div>
     </nav>
     <?php
+}
+
+function recogerGeneros($pdo)
+{
+    return $pdo->query('SELECT * FROM generos')->fetchAll();
 }

@@ -20,7 +20,7 @@
             $pdo = conectar();
             comprobarParametros(PAR_GENEROS);
             $valores = array_map('trim', $_POST);
-            $flt['genero'] = comprobarGenero($error);
+            $flt['genero'] = comprobarGenero($pdo, $error);
             comprobarErrores($error);
             insertarGenero($pdo, $flt);
             header('Location: index.php');
