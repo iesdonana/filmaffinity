@@ -8,6 +8,10 @@ const PAR = [
     'genero_id' => '',
 ];
 
+const PAR_GENEROS = [
+    'genero' => '',
+];
+
 class ValidationException extends Exception
 {
 }
@@ -62,6 +66,17 @@ function comprobarTitulo(&$error)
         $error['titulo'] = "El título es demasiado largo.";
     }
     return $fltTitulo;
+}
+
+function comprobarGenero(&$error)
+{
+    $fltGenero = trim(filter_input(INPUT_POST, 'genero'));
+    if ($fltGenero === '') {
+        $error['genero'] = 'El género es obligatorio.';
+    } elseif (mb_strlen($fltGenero) > 255) {
+        $error['genero'] = "El género es demasiado largo.";
+    }
+    return $fltGenero;
 }
 
 function comprobarAnyo(&$error)
@@ -120,6 +135,13 @@ function insertarPelicula($pdo, $fila)
     $st->execute($fila);
 }
 
+function insertarGenero($pdo, $fila)
+{
+    $st = $pdo->prepare('INSERT INTO generos (genero)
+                         VALUES (:genero)');
+    $st->execute($fila);
+}
+
 function modificarPelicula($pdo, $fila, $id)
 {
     $st = $pdo->prepare('UPDATE peliculas
@@ -132,6 +154,13 @@ function modificarPelicula($pdo, $fila, $id)
     $st->execute($fila + ['id' => $id]);
 }
 
+function modificarGenero($pdo, $fila, $id)
+{
+    $st = $pdo->prepare('UPDATE generos
+                            SET genero = :genero
+                          WHERE id = :id');
+    $st->execute($fila + ['id' => $id]);
+}
 
 function comprobarParametros($par)
 {
@@ -224,6 +253,32 @@ function mostrarFormulario($valores, $error, $pdo, $accion)
     <?php
 }
 
+function mostrarFormularioGenero($valores, $error, $pdo, $accion)
+{
+    extract($valores);
+    ?>
+    <br>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title"><?= $accion ?> un nuevo género...</h3>
+        </div>
+        <div class="panel-body">
+            <form action="" method="post">
+                <div class="form-group <?= hasError('genero', $error) ?>">
+                    <label for="genero" class="control-label">Género</label>
+                    <input id="genero" type="text" name="genero"
+                           class="form-control" value="<?= h($genero) ?>">
+                    <?php mensajeError('genero', $error) ?>
+                </div>
+                <input type="submit" value="<?= $accion ?>"
+                       class="btn btn-success">
+                <a href="index.php" class="btn btn-info">Volver</a>
+            </form>
+        </div>
+    </div>
+    <?php
+}
+
 function h($cadena)
 {
     return htmlspecialchars($cadena, ENT_QUOTES);
@@ -297,7 +352,17 @@ function comprobarUsuario($valores, $pdo, &$error)
 }
 
 function pie()
-{ ?>
+{
+    if (!isset($_COOKIE['acepta'])): ?>
+        <nav class="navbar navbar-fixed-bottom navbar-inverse">
+            <div class="container">
+                <div class="navbar-text navbar-right">
+                    Tienes que aceptar las políticas de cookies.
+                    <a href="crear_cookie.php" class="btn btn-success">Aceptar cookies</a>
+                </div>
+            </div>
+        </nav>
+    <?php endif ?>
     <hr>
     <div class="row">
         <p class="text-right">Copyright (c) 2018 IES Doñana</p>

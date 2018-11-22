@@ -83,10 +83,11 @@
             </div>
             <hr>
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-offset-3 col-md-6">
                     <table class="table table-bordered table-hover table-striped">
                         <thead>
                             <th>Género</th>
+                            <th>Acciones</th>
                         </thead>
                         <tbody>
                             <?php foreach ($st as $fila): ?>
